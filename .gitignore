@@ -1,0 +1,17 @@
+.DS_Store
+.venv/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Generated experiment artifacts
+results/
+results_old/
+runs/
+
+# Local secrets and editor state
+.env
+.env.*
+.idea/
+.vscode/

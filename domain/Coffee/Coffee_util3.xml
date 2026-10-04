@@ -1,0 +1,51 @@
+<utility_space>
+<objective index="0" description="" name="Coffee" type="objective" etype="objective">
+<issue index="1" name="Bean" vtype="discrete" type="discrete" etype="discrete">
+<item index="1" value="Blue Mountain" evaluation="60">
+</item>
+<item index="2" value="Bourbon" evaluation="80">
+</item>
+<item index="3" value="Colombian" evaluation="100">
+</item>
+<item index="4" value="Java" evaluation="90">
+</item>
+<item index="5" value="Paname" evaluation="70">
+</item>
+<item index="6" value="Santos" evaluation="50">
+</item>
+<item index="7" value="Uganda" evaluation="40">
+</item>
+</issue>
+<issue index="2" name="Sugar" vtype="discrete" type="discrete" etype="discrete">
+<item index="1" value="no" evaluation="20">
+</item>
+<item index="2" value="little" evaluation="60">
+</item>
+<item index="3" value="some" evaluation="100">
+</item>
+<item index="4" value="much" evaluation="40">
+</item>
+</issue>
+<issue index="3" name="Milk" vtype="discrete" type="discrete" etype="discrete">
+<item index="1" value="no" evaluation="10">
+</item>
+<item index="2" value="little" evaluation="60">
+</item>
+<item index="3" value="some" evaluation="90">
+</item>
+<item index="4" value="much" evaluation="100">
+</item>
+</issue>
+<weight index="1" value="0.22">
+</weight>
+<weight index="2" value="0.18">
+</weight>
+<weight index="3" value="0.60">
+</weight>
+</objective>
+<!-- <discount_factor value="0.5">
+</discount_factor> -->
+<!-- <reservation value="0.2"> -->
+<reservation value="0.0">
+</reservation>
+</utility_space>

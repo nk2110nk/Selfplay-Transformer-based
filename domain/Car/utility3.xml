@@ -1,0 +1,114 @@
+<utility_space number_of_issues="6">
+    <reservation value="0" />
+	<objective index="0" etype="objective" type="objective"
+		description="" name="Car">
+		<weight index="1" value="0.3" />
+		<weight index="2" value="0.25" />
+		<weight index="3" value="0.15" />
+		<weight index="4" value="0.1" />
+		<weight index="5" value="0.1" />
+		<weight index="6" value="0.1" />
+		<issue index="1" name="CD player" type="discrete" vtype="discrete" etype="discrete">
+			<item index="1" value="good" evaluation="10" />
+			<item index="2" value="fairly good" evaluation="42" />
+			<item index="3" value="standard" evaluation="57" />
+			<item index="4" value="meager" evaluation="76" />
+			<item index="5" value="none" evaluation="100" />
+			<similarity_function weight="0.6">
+				<criteria_function  weight="1">
+					<item index="1" value="good" evaluation="1"/>
+					<item index="2" value="fairly good" evaluation="0.75"/>
+					<item index="3" value="standard" evaluation="0.55"/>
+					<item index="4" value="meager" evaluation="0.35"/>
+					<item index="5" value="none" evaluation="0.15"/>
+					<item index="6" value="unspecified" evaluation="0"/>			
+				</criteria_function>
+			</similarity_function>
+		</issue>
+		<issue index="2" name="Extra speakers" type="discrete" vtype="discrete" etype="discrete">
+			<item index="1" value="good" evaluation="5" />
+			<item index="2" value="fairly good" evaluation="30" />
+			<item index="3" value="standard" evaluation="52" />
+			<item index="4" value="meager" evaluation="79" />
+			<item index="5" value="none" evaluation="100" />
+		<similarity_function weight="0.2">
+			<criteria_function  weight="1">
+				<item index="1" value="good" evaluation="1"/>
+				<item index="2" value="fairly good" evaluation="0.7"/>
+				<item index="3" value="standard" evaluation="0.5"/>
+				<item index="4" value="meager" evaluation="0.3"/>
+				<item index="5" value="none" evaluation="0.1"/>
+				<item index="6" value="unspecified" evaluation="0"/>			
+			</criteria_function>
+		</similarity_function>
+		</issue>
+		<issue index="3" name="Airconditioning" type="discrete" vtype="discrete" etype="discrete">
+			<item index="1" value="good" evaluation="15" />
+			<item index="2" value="fairly good" evaluation="45" />
+			<item index="3" value="standard" evaluation="67" />
+			<item index="4" value="meager" evaluation="82" />
+			<item index="5" value="none" evaluation="100" />
+		<similarity_function weight="0.2">
+			<criteria_function  weight="1">
+				<item index="1" value="good" evaluation="1"/>
+				<item index="2" value="fairly good" evaluation="0.7"/>
+				<item index="3" value="standard" evaluation="0.5"/>
+				<item index="4" value="meager" evaluation="0.3"/>
+				<item index="5" value="none" evaluation="0.1"/>
+				<item index="6" value="unspecified" evaluation="0"/>			
+			</criteria_function>
+		</similarity_function>
+		</issue>
+		<issue index="4" name="Tow hedge" type="discrete" vtype="discrete" etype="discrete">
+			<item index="1" value="good" evaluation="20" />
+			<item index="2" value="fairly good" evaluation="47" />
+			<item index="3" value="standard" evaluation="65" />
+			<item index="4" value="meager" evaluation="88" />
+			<item index="5" value="none" evaluation="100" />
+		<similarity_function weight="0.9">
+			<criteria_function  weight="1">
+				<item index="1" value="good" evaluation="1"/>
+				<item index="2" value="fairly good" evaluation="0.7"/>
+				<item index="3" value="standard" evaluation="0.5"/>
+				<item index="4" value="meager" evaluation="0.3"/>
+				<item index="5" value="none" evaluation="0.1"/>
+				<item index="6" value="unspecified" evaluation="0"/>			
+			</criteria_function>
+		</similarity_function>
+		</issue>
+		<issue index="5" name="Tow hedge2" type="discrete" vtype="discrete" etype="discrete">
+			<item index="1" value="good" evaluation="12" />
+			<item index="2" value="fairly good" evaluation="40" />
+			<item index="3" value="standard" evaluation="64" />
+			<item index="4" value="meager" evaluation="86" />
+			<item index="5" value="none" evaluation="100" />
+		<similarity_function weight="0.9">
+			<criteria_function  weight="1">
+				<item index="1" value="good" evaluation="1"/>
+				<item index="2" value="fairly good" evaluation="0.7"/>
+				<item index="3" value="standard" evaluation="0.5"/>
+				<item index="4" value="meager" evaluation="0.3"/>
+				<item index="5" value="none" evaluation="0.1"/>
+				<item index="6" value="unspecified" evaluation="0"/>			
+			</criteria_function>
+		</similarity_function>
+		</issue>
+		<issue index="6" name="Tow hedge3" type="discrete" vtype="discrete" etype="discrete">
+			<item index="1" value="good" evaluation="25" />
+			<item index="2" value="fairly good" evaluation="48" />
+			<item index="3" value="standard" evaluation="63" />
+			<item index="4" value="meager" evaluation="91" />
+			<item index="5" value="none" evaluation="100" />
+		<similarity_function weight="0.9">
+			<criteria_function  weight="1">
+				<item index="1" value="good" evaluation="1"/>
+				<item index="2" value="fairly good" evaluation="0.7"/>
+				<item index="3" value="standard" evaluation="0.5"/>
+				<item index="4" value="meager" evaluation="0.3"/>
+				<item index="5" value="none" evaluation="0.1"/>
+				<item index="6" value="unspecified" evaluation="0"/>			
+			</criteria_function>
+		</similarity_function>
+		</issue>
+	</objective>
+</utility_space>

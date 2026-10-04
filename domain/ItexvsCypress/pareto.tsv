@@ -1,0 +1,19 @@
+bid	util1	util2
+{'Price': '$3.47', 'Delivery': '45 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	0.7214778614020514	0.6704784151387018
+{'Price': '$3.47', 'Delivery': '45 days', 'Payment': 'Upon delivery', 'Returns': '5% spoilage allowed'}	0.5762024061367292	0.7768404642833386
+{'Price': '$3.71', 'Delivery': '45 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	0.7598947081052168	0.5882255000493235
+{'Price': '$3.47', 'Delivery': '30 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	0.6257133372529872	0.7144278168317714
+{'Price': '$3.47', 'Delivery': '20 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	0.5778310751784551	0.7437274179604845
+{'Price': '$3.98', 'Delivery': '45 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	0.8079157664841733	0.49422216851860556
+{'Price': '$3.47', 'Delivery': '30 days', 'Payment': 'Upon delivery', 'Returns': '5% spoilage allowed'}	0.480437881987665	0.8207898659764084
+{'Price': '$3.47', 'Delivery': '20 days', 'Payment': 'Upon delivery', 'Returns': '5% spoilage allowed'}	0.43255561991313296	0.8500894671051213
+{'Price': '$3.47', 'Delivery': '45 days', 'Payment': 'Upon delivery', 'Returns': 'Full price'}	0.30725752490588765	0.9267509971782172
+{'Price': '$4.12', 'Delivery': '45 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	0.9039578832420866	0.3179659218985093
+{'Price': '$3.47', 'Delivery': '30 days', 'Payment': '30 days after delivery', 'Returns': 'Full price'}	0.3567684560221456	0.8643383497266499
+{'Price': '$4.37', 'Delivery': '45 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	1.0	0.21221217392645159
+{'Price': '$3.47', 'Delivery': '20 days', 'Payment': '30 days after delivery', 'Returns': 'Full price'}	0.3088861939476135	0.893637950855363
+{'Price': '$3.47', 'Delivery': '30 days', 'Payment': 'Upon delivery', 'Returns': 'Full price'}	0.21149300075682342	0.9707003988712869
+{'Price': '$4.37', 'Delivery': '45 days', 'Payment': 'Upon delivery', 'Returns': '5% spoilage allowed'}	0.854724544734678	0.3185742230710885
+{'Price': '$4.12', 'Delivery': '30 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	0.8081933590930225	0.36191532359157896
+{'Price': '$3.47', 'Delivery': '20 days', 'Payment': 'Upon delivery', 'Returns': 'Full price'}	0.16361073868229134	0.9999999999999999
+{'Price': '$4.37', 'Delivery': '30 days', 'Payment': '30 days after delivery', 'Returns': '5% spoilage allowed'}	0.9042354758509359	0.25616157561952124

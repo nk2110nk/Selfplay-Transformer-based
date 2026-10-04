@@ -1,0 +1,78 @@
+<utility_space>
+    <objective index="0" description="" name="Lunch" type="objective" etype="objective">
+    <issue index="1" name="salad" vtype="discrete" type="discrete" etype="discrete">
+    <item index="1" value="green" evaluation="18">
+    </item>
+    <item index="2" value="potato" evaluation="42">
+    </item>
+    <item index="3" value="caesar" evaluation="65">
+    </item>
+    <item index="4" value="sea" evaluation="100">
+    </item>
+    </issue>
+    <issue index="2" name="soup" vtype="discrete" type="discrete" etype="discrete">
+    <item index="1" value="corn(ice)" evaluation="28">
+    </item>
+    <item index="2" value="corn(hot)" evaluation="55">
+    </item>
+    <item index="3" value="onion" evaluation="14">
+    </item>
+    <item index="4" value="miso" evaluation="100">
+    </item>
+    </issue>
+    <issue index="3" name="carbohydrate" vtype="discrete" type="discrete" etype="discrete">
+    <item index="1" value="rice" evaluation="50">
+    </item>
+    <item index="2" value="bread(roll)" evaluation="22">
+    </item>
+    <item index="3" value="bread(rye)" evaluation="100">
+    </item>
+    <item index="4" value="bread(french)" evaluation="35">
+    </item>
+    </issue>
+    <issue index="4" name="main" vtype="discrete" type="discrete" etype="discrete">
+    <item index="1" value="beef" evaluation="20">
+    </item>
+    <item index="2" value="pork" evaluation="48">
+    </item>
+    <item index="3" value="chicken" evaluation="72">
+    </item>
+    <item index="4" value="fish" evaluation="100">
+    </item>
+    </issue>
+    <issue index="5" name="drink" vtype="discrete" type="discrete" etype="discrete">
+    <item index="1" value="coke" evaluation="12">
+    </item>
+    <item index="2" value="tea" evaluation="100">
+    </item>
+    <item index="3" value="green tea" evaluation="40">
+    </item>
+    <item index="4" value="apple" evaluation="58">
+    </item>
+    <item index="5" value="orange" evaluation="75">
+    </item>
+    </issue>
+    <issue index="6" name="dessert" vtype="discrete" type="discrete" etype="discrete">
+    <item index="1" value="cake" evaluation="100">
+    </item>
+    <item index="2" value="sherbet" evaluation="25">
+    </item>
+    <item index="3" value="ice cream" evaluation="60">
+    </item>
+    </issue>
+    <weight index="1" value="0.10">
+    </weight>
+    <weight index="2" value="0.18">
+    </weight>
+    <weight index="3" value="0.12">
+    </weight>
+    <weight index="4" value="0.14">
+    </weight>
+    <weight index="5" value="0.26">
+    </weight>
+    <weight index="6" value="0.20">
+    </weight>
+    </objective>
+    <reservation value="0.0">
+    </reservation>
+</utility_space>
