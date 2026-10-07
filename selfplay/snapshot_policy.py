@@ -7,18 +7,19 @@ from pathlib import Path
 
 import torch
 
+from envs.env import CASE_ORDERS
 from envs.observer import EmbeddedObserveHistory
 from envs.rl_negotiator import PolicyNegotiator
 from policy import Transformer_Policy
 
-SNAPSHOT_FORMAT_VERSION = 2
+SNAPSHOT_FORMAT_VERSION = 3
 
 
 def build_policy(source, env, state_dict=None, device="cpu"):
+    device = torch.device(device)
     if isinstance(source, Transformer_Policy):
         config = source.model_config()
         policy = copy.deepcopy(source).to(device)
-        policy.device = torch.device(device)
     else:
         config = dict(source)
         if config.get("architecture_version") != Transformer_Policy.ARCHITECTURE_VERSION:
@@ -37,6 +38,9 @@ def build_policy(source, env, state_dict=None, device="cpu"):
         if state_dict is None:
             raise ValueError("Snapshot state_dict is required")
         policy.load_state_dict(state_dict)
+        policy = policy.to(device)
+    policy.device = device
+    policy.feature_extractor.device = device
     policy.set_domain(env.domain, env.issues, env.action_space)
     policy.eval()
     for parameter in policy.parameters():
@@ -63,6 +67,15 @@ class SnapshotPolicyFactory:
         mapping = state.get("action_mapping", {}).get(env.domain)
         if mapping is not None and mapping["action_count"] != env.action_space.n:
             raise ValueError(f"Snapshot action mapping is incompatible with domain {env.domain}")
+        cases = state.get("utility_cases", state.get("case", []))
+        if isinstance(cases, str):
+            cases = [cases]
+        if env.case not in cases:
+            raise ValueError(f"Snapshot is incompatible with utility case {env.case}")
+        expected_order = list(CASE_ORDERS[env.case])
+        stored_order = state.get("utility_orders", {}).get(env.case)
+        if stored_order != expected_order:
+            raise ValueError(f"Snapshot utility order is incompatible with {env.case}")
         policy = build_policy(state["model_config"], env, state["model"], self.device)
         observer = EmbeddedObserveHistory(
             env.domain, env.issues, n_turn=env.n_steps, scale=state["model_config"]["scale"]
@@ -107,7 +120,11 @@ def save_snapshot(model_dir, model, config, step, metrics):
         "issues": config["issues"],
         "model_type": config["model_type"],
         "case": config["utility_cases"],
-        "compatible_domains": config["issues"],
+        "utility_cases": config["utility_cases"],
+        "utility_orders": config["utility_orders"],
+        "compatible_domains": list(dict.fromkeys(
+            [*config["issues"], *config.get("compatible_domains", [])]
+        )),
         "action_mapping": config["action_mapping"],
         "benchmark": metrics,
         "global_step": int(step),

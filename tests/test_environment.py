@@ -38,3 +38,12 @@ def test_case_utility_order(case, order):
 def test_case4_is_rejected():
     with pytest.raises(ValueError, match="Unknown utility case"):
         AOPEnv("Laptop", test=True, add_noise=False, case="case4")
+
+
+def test_training_reward_uses_the_case_learner_utility():
+    env = AOPEnv("Laptop", test=False, add_noise=False, case="case2")
+    bid = env.all_bids[0]
+    agreement = {issue.name: value for issue, value in zip(env.issues, bid)}
+    env.state = {"agreement": agreement}
+    assert env.get_reward() == pytest.approx(float(env.ufuns[1](bid)))
+    env.close()

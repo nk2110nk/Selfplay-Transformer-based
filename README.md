@@ -207,6 +207,41 @@ pytest -q
 
 テストには行動契約、学習者手番境界、Observer reset、Accept mask、全issue/履歴pooling、PFSP、順序付きpair sampling、pool永続化・pruning、frozen current self-play、snapshot生成、checkpoint resume、TSV列整合性が含まれます。
 
+## case1〜case3本実験
+
+本実験はseed 0で、expert 210モデル（7既知ドメイン×10相手ペア×3 cases、各100,000 step）とgeneral 3モデル（3 cases、各300,000 step）を学習します。generalの学習対象は既知7ドメインだけで、未知5ドメインは事前の形状検証と最終評価だけに使用します。
+
+```text
+results/caseN/models/expert/<pair>/<domain>/Transformer_Negotiator/
+results/caseN/models/general/Transformer_Negotiator/
+results/caseN/evaluation/<expert|general>/<pair>/<domain>/caseN/
+```
+
+学習コマンド213件と評価条件570件は、それぞれ次で確認できます。
+
+```bash
+DRY_RUN=1 bash run_command/run_case_experiments.sh
+DRY_RUN=1 bash run_command/evaluate_case_experiments.sh
+```
+
+RTX 5090用の実験イメージを構築し、GPUごとに独立したDockerコンテナを使う2 shardのジョブレベル並列実行は次で開始します。起動スクリプトは両GPUに既存compute processがある場合は安全のため開始しません。
+
+```bash
+bash run_command/launch_case_experiments_tmux.sh
+tmux attach -t selfplay-transformer-cases
+```
+
+tmuxのウィンドウは`gpu0`と`gpu1`、ログは`results/experiment_logs/train-gpu0.log`と`train-gpu1.log`です。完了済みcheckpointはskipし、未完了checkpointは累積stepからresumeします。
+
+全checkpointの学習後、最終評価570条件を2 GPUへ分割して実行します。
+
+```bash
+bash run_command/launch_case_evaluations_tmux.sh
+tmux attach -t selfplay-transformer-evaluation
+```
+
+評価ログは`results/experiment_logs/evaluate-gpu0.log`と`evaluate-gpu1.log`、完了マーカーは`results/experiment_status/eval-shard-*-of-2.done`です。
+
 ## 論文・MiPN自己対戦版との差分
 
 - 本実装はPPOであり、論文と`Selfplay-mipn-based`のDSAC/quantile criticではありません。

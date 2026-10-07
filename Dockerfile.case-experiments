@@ -1,0 +1,9 @@
+FROM transformer:dev
+
+# RTX 5090 requires a CUDA 12.8-capable PyTorch build.  Keep the project's
+# existing Python 3.10 dependency environment and replace only PyTorch.
+RUN pip install --no-cache-dir --upgrade \
+    torch==2.8.0 --index-url https://download.pytorch.org/whl/cu128 \
+ && pip install --no-cache-dir "pytest>=7,<10"
+
+WORKDIR /home/nakata/Selfplay-Transformer-based

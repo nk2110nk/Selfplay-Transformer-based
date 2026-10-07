@@ -14,11 +14,19 @@ from .snapshot_policy import factory_for_entry
 
 
 def balanced_schedule(domains, anchors, cases, minimum_episodes):
-    base = list(itertools.product(domains, anchors, cases, (0, 1)))
-    if not base or minimum_episodes < 1:
+    domains = list(dict.fromkeys(domains))
+    anchors = list(dict.fromkeys(anchors))
+    cases = list(dict.fromkeys(cases))
+    if not domains or not anchors or not cases or minimum_episodes < 1:
         raise ValueError("Pool evaluation needs domains, anchors, cases and positive episodes")
-    cycles = max(1, (minimum_episodes + len(base) - 1) // len(base))
-    return (base * cycles)[:max(minimum_episodes, len(base))]
+    domain_cycles = max(1, (minimum_episodes + len(domains) - 1) // len(domains))
+    contexts = itertools.cycle(itertools.product(anchors, cases, (0, 1)))
+    schedule = []
+    for _ in range(domain_cycles):
+        for domain in domains:
+            anchor, case, slot = next(contexts)
+            schedule.append((domain, anchor, case, slot))
+    return schedule
 
 
 def run_episode(model, entry, anchor, slot, domain, case, model_dir, seed, device="cpu", target=None):
@@ -41,14 +49,26 @@ def run_episode(model, entry, anchor, slot, domain, case, model_dir, seed, devic
 
 
 def _aggregate(rows, length_weight):
-    count = len(rows)
+    if not rows:
+        raise ValueError("Cannot aggregate an empty evaluation")
+    by_domain = {}
+    for row in rows:
+        by_domain.setdefault(row["domain"], []).append(row)
+    per_domain = []
+    for domain_rows in by_domain.values():
+        count = len(domain_rows)
+        per_domain.append({
+            "agreement_rate": sum(float(row["agreement"]) for row in domain_rows) / count,
+            "agent_utility": sum(row["agent_utility"] for row in domain_rows) / count,
+            "mean_length": sum(row["length"] for row in domain_rows) / count,
+            "opponent1_utility": sum(row["opponent1_utility"] for row in domain_rows) / count,
+            "opponent2_utility": sum(row["opponent2_utility"] for row in domain_rows) / count,
+            "social_welfare": sum(row["social_welfare"] for row in domain_rows) / count,
+        })
+    count = len(per_domain)
     metrics = {
-        "agreement_rate": sum(float(row["agreement"]) for row in rows) / count,
-        "agent_utility": sum(row["agent_utility"] for row in rows) / count,
-        "mean_length": sum(row["length"] for row in rows) / count,
-        "opponent1_utility": sum(row["opponent1_utility"] for row in rows) / count,
-        "opponent2_utility": sum(row["opponent2_utility"] for row in rows) / count,
-        "social_welfare": sum(row["social_welfare"] for row in rows) / count,
+        key: sum(domain_metrics[key] for domain_metrics in per_domain) / count
+        for key in per_domain[0]
     }
     metrics["negotiation_score"] = negotiation_score(
         metrics["agreement_rate"], metrics["agent_utility"], metrics["mean_length"], length_weight

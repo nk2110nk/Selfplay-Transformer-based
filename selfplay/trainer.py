@@ -17,8 +17,8 @@ try:
 except ImportError:  # pragma: no cover
     SummaryWriter = None
 
-from envs.env import AOPEnv
-from policy import RolloutBuffer, Transformer_Policy
+from envs.env import AOPEnv, CASE_ORDERS
+from policy import MAX_ACTIONS, RolloutBuffer, Transformer_Policy
 from results import write_results
 from .checkpoint import restore_random_states, save_checkpoint
 from .evaluator import evaluate_pool
@@ -68,10 +68,18 @@ class SelfPlayPPOTrainer:
             }
         }
         first_env.close()
-        for domain in config["issues"][1:]:
+        configured_domains = list(dict.fromkeys(
+            [*config["issues"], *config.get("compatible_domains", [])]
+        ))
+        for domain in configured_domains[1:]:
             metadata_env = AOPEnv(
                 domain, scale=config["scale"], case=config["utility_cases"][0], add_noise=False
             )
+            if metadata_env.action_space.n > MAX_ACTIONS:
+                raise ValueError(
+                    f"Domain {domain} needs {metadata_env.action_space.n} actions, "
+                    f"exceeding MAX_ACTIONS={MAX_ACTIONS}"
+                )
             action_mapping[domain] = {
                 "accept": 0,
                 "bid_offset": 1,
@@ -138,6 +146,13 @@ class SelfPlayPPOTrainer:
         return device
 
     def _restore(self, checkpoint):
+        if checkpoint["utility_cases"] != self.config["utility_cases"]:
+            raise ValueError("Checkpoint utility cases do not match this run")
+        expected_orders = {
+            case: list(CASE_ORDERS[case]) for case in self.config["utility_cases"]
+        }
+        if checkpoint["utility_orders"] != expected_orders:
+            raise ValueError("Checkpoint utility orders do not match this run")
         if checkpoint["model_config"] != self.model.model_config():
             raise ValueError("Checkpoint model configuration does not match this run")
         if checkpoint["pool_metadata"] != self.pool.to_dict():

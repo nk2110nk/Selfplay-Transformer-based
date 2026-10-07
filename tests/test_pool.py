@@ -1,6 +1,8 @@
 import json
+from collections import Counter
 import numpy as np
 
+from selfplay.evaluator import balanced_schedule
 from selfplay.entry import PoolEntry
 from selfplay.pfsp import pfsp_probabilities
 from selfplay.pool import OpponentPool, is_dominant
@@ -44,3 +46,17 @@ def test_snapshot_admission_uses_utility_then_score():
     assert is_dominant({"agreement_rate": 1.0, "agent_utility": 0.7, "negotiation_score": 1.0}, incumbent)
     assert is_dominant({"agreement_rate": 1.0, "agent_utility": 0.605, "negotiation_score": 2.0}, incumbent)
     assert not is_dominant({"agreement_rate": 1.0, "agent_utility": 0.5, "negotiation_score": 3.0}, incumbent)
+
+
+def test_pool_evaluation_rounds_domains_equally():
+    domains = [f"domain{index}" for index in range(7)]
+    schedule = balanced_schedule(domains, ["Boulware"], ["case1"], 4)
+    assert len(schedule) == 7
+    assert Counter(item[0] for item in schedule) == Counter({domain: 1 for domain in domains})
+
+    schedule = balanced_schedule(domains, ["Boulware"], ["case1"], 14)
+    assert len(schedule) == 14
+    assert Counter(item[0] for item in schedule) == Counter({domain: 2 for domain in domains})
+
+    schedule = balanced_schedule(["Laptop"], ["Boulware"], ["case1"], 4)
+    assert len(schedule) == 4

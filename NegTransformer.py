@@ -215,8 +215,11 @@ class NegTransformer(nn.Module):
         self.att_weight = None
         self.decoder_only = decoder_only
 
-        self.memory = memory.to(self.device)
-        self.memory_encoded = None
+        # Domain memory is runtime state rather than a learned parameter.  It
+        # must still follow module.to(device), otherwise snapshot policies
+        # loaded from CPU checkpoints mix CUDA memory with CPU parameters.
+        self.register_buffer("memory", memory.to(self.device), persistent=False)
+        self.register_buffer("memory_encoded", None, persistent=False)
         self.block_size = config.block_size
         self.apply(self._init_weights)
         

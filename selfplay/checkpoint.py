@@ -8,7 +8,7 @@ import random
 import numpy as np
 import torch
 
-CHECKPOINT_FORMAT_VERSION = 2
+CHECKPOINT_FORMAT_VERSION = 3
 
 
 def random_states(rng):
@@ -42,6 +42,8 @@ def save_checkpoint(model_dir, model, optimizer, pool, config, global_step,
         "optimizer": optimizer.state_dict(),
         "model_config": model.model_config(),
         "action_mapping": config["action_mapping"],
+        "utility_cases": config["utility_cases"],
+        "utility_orders": config["utility_orders"],
         "config": config,
         "global_step": int(global_step),
         "cumulative_timesteps": int(global_step),
@@ -68,4 +70,9 @@ def load_checkpoint(path, device="cpu"):
         raise ValueError(f"Unsupported checkpoint format: {state.get('format_version')}")
     if state.get("architecture_version") != 2:
         raise ValueError(f"Unsupported Transformer architecture: {state.get('architecture_version')}")
+    config = state.get("config", {})
+    if state.get("utility_cases") != config.get("utility_cases"):
+        raise ValueError("Checkpoint utility cases do not match its configuration")
+    if state.get("utility_orders") != config.get("utility_orders"):
+        raise ValueError("Checkpoint utility orders do not match its configuration")
     return state

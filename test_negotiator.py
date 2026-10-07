@@ -28,7 +28,8 @@ def _device(value):
 
 
 def evaluate(model_path, agents, issues, episodes=100, seed=0, device="auto",
-             noise=False, deterministic=False, case=None, export_root=None):
+             noise=False, deterministic=False, case=None, export_root=None,
+             style="neutral"):
     checkpoint = load_checkpoint(model_path, "cpu")
     config = checkpoint["config"]
     model_dir = Path(model_path)
@@ -37,8 +38,17 @@ def evaluate(model_path, agents, issues, episodes=100, seed=0, device="auto",
     requested_case = normalize_case(case or config["utility_cases"][0])
     if requested_case not in CASES:
         raise ValueError(f"Unknown utility case: {requested_case}")
+    if requested_case not in config["utility_cases"]:
+        raise ValueError(
+            f"Checkpoint was trained for {config['utility_cases']}, not {requested_case}"
+        )
+    if style != "neutral":
+        raise ValueError("Transformer PPO checkpoints support only neutral style")
     if config["model_type"] == "expert" and any(issue not in config["issues"] for issue in issues):
         raise ValueError("Expert checkpoint can only evaluate its training domain")
+    missing = [issue for issue in issues if issue not in checkpoint["action_mapping"]]
+    if missing:
+        raise ValueError(f"Checkpoint is not compatible with domains: {', '.join(missing)}")
     run_device = _device(device)
     first_env = AOPEnv(issues[0], test=True, scale=config["scale"], case=requested_case, add_noise=noise)
     model = Transformer_Policy(
@@ -67,6 +77,9 @@ def evaluate(model_path, agents, issues, episodes=100, seed=0, device="auto",
                 np.random.seed(episode_seed)
                 torch.manual_seed(episode_seed)
                 env = AOPEnv(issue, test=True, scale=config["scale"], case=requested_case, add_noise=noise)
+                mapping = checkpoint["action_mapping"][issue]
+                if mapping["action_count"] != env.action_space.n:
+                    raise ValueError(f"Checkpoint action mapping is incompatible with {issue}")
                 model.set_domain(issue, env.issues, env.action_space)
                 observation, _ = env.reset(
                     seed=episode_seed, options={"opponent": pair, "case": requested_case}
@@ -79,7 +92,7 @@ def evaluate(model_path, agents, issues, episodes=100, seed=0, device="auto",
                     observation, _, terminated, truncated, info = env.step(int(action.item()))
                     done = terminated or truncated
                 rows.append(row_from_info(
-                    info, opponents, episode_seed, config["score_length_weight"]
+                    info, opponents, episode_seed, config["score_length_weight"], style=style
                 ))
                 env.close()
             path = result_path(model_dir, pair, issue, deterministic, noise)
@@ -106,6 +119,7 @@ def main(argv=None):
     parser.add_argument("--noise", action="store_true")
     parser.add_argument("--deterministic", action="store_true")
     parser.add_argument("--case", choices=CASES + ("1", "2", "3"))
+    parser.add_argument("--style", choices=("neutral",), default="neutral")
     parser.add_argument("--export-root")
     args = parser.parse_args(argv)
     if args.episodes < 1:
@@ -113,7 +127,7 @@ def main(argv=None):
     for path in evaluate(
         args.model_path, args.agents, args.issues, args.episodes, seed=args.seed,
         device=args.device, noise=args.noise, deterministic=args.deterministic,
-        case=args.case, export_root=args.export_root,
+        case=args.case, export_root=args.export_root, style=args.style,
     ):
         print(path)
 

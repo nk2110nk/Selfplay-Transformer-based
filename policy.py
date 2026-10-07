@@ -42,9 +42,26 @@ class PolicyNet(nn.Module):
         self.observation_space = obs_space
         self.action_space = action_space
 
+    def to(self, *args, **kwargs):
+        module = super().to(*args, **kwargs)
+        try:
+            module.device = next(module.parameters()).device
+        except StopIteration:
+            pass
+        return module
+
     def predict(self, observation, state=None, deterministic=False):
+        array = np.asarray(observation)
+        observation_rank = len(self.observation_space.shape)
+        if array.ndim == observation_rank:
+            array = array[None, ...]
+        elif array.ndim != observation_rank + 1:
+            raise ValueError(
+                f"Expected an unbatched or batched observation with rank "
+                f"{observation_rank} or {observation_rank + 1}, got {array.ndim}"
+            )
         obs = torch.as_tensor(
-            np.asarray(observation).reshape(-1, *self.observation_space.shape),
+            array,
             device=self.device,
             dtype=torch.float32,
         )
@@ -251,11 +268,15 @@ class Transformer_Policy(PolicyNet):
         self.issues = issues
         self.action_space = action_space
         self.action_dim = action_dim
+        parameter_device = next(self.parameters()).device
+        self.device = parameter_device
         self.embedding_model.make_offer_embedding(save_path=f"./embeddings/openai/{self.scale}/{domain}.json")
         memory = self.embedding_model.outcomes_embedding(
             issues, save_path=f"./embeddings/openai/i_embs/{self.scale}/{domain}.json"
         )
-        self.feature_extractor.memory = torch.as_tensor(memory, device=self.device, dtype=torch.float32)
+        self.feature_extractor.memory = torch.as_tensor(
+            memory, device=parameter_device, dtype=torch.float32
+        )
         self.feature_extractor.memory_encoded = None
         self.feature_extractor.isEncoded = False
 

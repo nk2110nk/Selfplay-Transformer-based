@@ -26,6 +26,10 @@ CASE_ORDERS = {
     "case2": (1, 2, 0),
     "case3": (2, 0, 1),
 }
+CASE_UTILITY_NAMES = {
+    case: tuple(f"utility{index + 1}" for index in order)
+    for case, order in CASE_ORDERS.items()
+}
 
 
 def scripted_opponent(name: str, slot: int = 0, add_noise: bool = True):

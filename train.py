@@ -10,12 +10,18 @@ from pathlib import Path
 
 from selfplay.checkpoint import load_checkpoint
 from selfplay.trainer import SelfPlayPPOTrainer
+from envs.env import CASE_ORDERS
 
 SCRIPTED = (
     "Boulware", "Linear", "Conceder", "TitForTat1", "TitForTat2",
     "AgentK", "HardHeaded", "Atlas3", "AgentGG",
 )
 CASES = ("case1", "case2", "case3")
+KNOWN_DOMAINS = (
+    "Laptop", "ItexvsCypress", "IS_BT_Acquisition", "Grocery",
+    "thompson", "Car", "EnergySmall_A",
+)
+UNKNOWN_DOMAINS = ("Coffee", "Camera", "Lunch", "SmartPhone", "Kitchen")
 
 
 def normalize_case(value):
@@ -28,7 +34,7 @@ def build_model_dir(save_path, issues, agents, resume=None):
         path = Path(resume)
         return path if path.is_dir() else path.parent
     root = Path(save_path)
-    if root.name == "TransformerSelfPlay_Negotiator":
+    if root.name in {"TransformerSelfPlay_Negotiator", "Transformer_Negotiator"}:
         return root
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     return root / f"{'-'.join(issues)}_{'-'.join(agents)}" / f"{stamp}-TA" / "TransformerSelfPlay_Negotiator"
@@ -73,15 +79,27 @@ def parse_args(argv=None):
     parser.add_argument("--dominance-tolerance", type=float, default=0.01)
     parser.add_argument("--min-agreement-rate", type=float, default=0.0)
     parser.add_argument("--score-length-weight", type=float, default=-0.005)
-    parser.add_argument("--utility-cases", nargs="+", default=["case1"])
+    parser.add_argument("--utility-cases", nargs="+", default=None)
+    parser.add_argument(
+        "--compatible-domains", nargs="+", default=None,
+        help="Evaluation-only domains validated and stored in a general checkpoint",
+    )
     parser.add_argument("--opponent-noise", action=argparse.BooleanOptionalAction, default=True)
     args = parser.parse_args(argv)
 
     if not args.resume and (not args.agents or not args.issue):
         parser.error("--agents and --issue are required for a new run")
-    args.utility_cases = list(dict.fromkeys(normalize_case(value) for value in args.utility_cases))
-    if any(value not in CASES for value in args.utility_cases):
-        parser.error(f"--utility-cases must be selected from {', '.join(CASES)}")
+    if args.utility_cases is not None:
+        args.utility_cases = list(dict.fromkeys(normalize_case(value) for value in args.utility_cases))
+        if any(value not in CASES for value in args.utility_cases):
+            parser.error(f"--utility-cases must be selected from {', '.join(CASES)}")
+    elif not args.resume:
+        args.utility_cases = ["case1"]
+    if not args.resume:
+        if args.compatible_domains is None:
+            args.compatible_domains = list(UNKNOWN_DOMAINS) if args.model_type == "general" else []
+        elif args.model_type != "general":
+            parser.error("--compatible-domains is only valid for general models")
     numeric_positive = (
         args.total_timesteps, args.num_envs, args.batch_size, args.horizon,
         args.n_epochs, args.pool_eval_freq, args.snapshot_freq, args.pool_eval_episodes,
@@ -139,6 +157,10 @@ def _new_config(args):
         "min_agreement_rate": args.min_agreement_rate,
         "score_length_weight": args.score_length_weight,
         "utility_cases": args.utility_cases,
+        "utility_orders": {
+            case: list(CASE_ORDERS[case]) for case in args.utility_cases
+        },
+        "compatible_domains": list(dict.fromkeys(args.compatible_domains or [])),
         "opponent_noise": args.opponent_noise,
     }
 
@@ -150,6 +172,13 @@ def train(args):
         for supplied, key in ((args.issue, "issues"), (args.agents, "agents")):
             if supplied is not None and list(supplied) != config[key]:
                 raise ValueError(f"Resume configuration differs for {key}: {supplied} != {config[key]}")
+        if args.utility_cases is not None and args.utility_cases != config["utility_cases"]:
+            raise ValueError(
+                f"Resume configuration differs for utility_cases: "
+                f"{args.utility_cases} != {config['utility_cases']}"
+            )
+        if args.compatible_domains is not None and args.compatible_domains != config.get("compatible_domains", []):
+            raise ValueError("Resume configuration differs for compatible_domains")
         config["device"] = args.device
         model_dir = build_model_dir(args.save_path, config["issues"], config["agents"], args.resume)
     else:
